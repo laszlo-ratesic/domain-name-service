@@ -3,28 +3,32 @@
 
 // Note: hre.ethers = Hardhat Runtime Environment
 const main = async () => {
-        const [owner, randomPerson] = await hre.ethers.getSigners();
-    const domainContractFactory = await hre.ethers.getContractFactory('Domains');
-        const domainContract = await domainContractFactory.deploy();
-        await domainContract.deployed();
-    console.log("Contract deployed to:", domainContract.address);
-        console.log("Contract deployed by:", owner.address);
+  const domainContractFactory = await hre.ethers.getContractFactory("Domains");
+  // Pass in our domain name, in this case: ganggang will init our tld
+  const domainContract = await domainContractFactory.deploy("ganggang");
+  await domainContract.deployed();
 
-        const txn = await domainContract.register("doom");
-        await txn.wait();
+  console.log("Contract deployed to:", domainContract.address);
 
-    const domainOwner = await domainContract.getAddress("doom");
-    console.log("Owner of domain:", domainOwner);
+  // Passing two variables - domain name & value AKA $$m00lah$$
+  let txn = await domainContract.register("kitty", {value: hre.ethers.utils.parseEther('0.1')});
+  await txn.wait();
+
+  const addy = await domainContract.getAddress("kitty");
+  console.log("Owner of domain kitty:", addy);
+
+  const balance = await hre.ethers.provider.getBalance(domainContract.address);
+  console.log("Contract balance:", hre.ethers.utils.formatEther(balance));
 };
 
 const runMain = async () => {
-    try {
-        await main();
-        process.exit(0);
-    } catch (error) {
-        console.log(error);
-        process.exit(1);
-    }
+  try {
+    await main();
+    process.exit(0);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
 };
 
 runMain();
