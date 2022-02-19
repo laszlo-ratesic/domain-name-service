@@ -77,7 +77,7 @@ contract Domains is ERC721URIStorage {
 
     // register function that adds names to mapping
     function register(string calldata name) public payable {
-        if (msg.sender != domains[name]) revert Unauthorized();
+        if (domains[name] != address(0)) revert AlreadyRegistered();
         if (!valid(name)) revert InvalidName(name);
         // Check that the name is unregistered
         require(domains[name] == address(0));
